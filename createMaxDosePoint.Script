@@ -1,0 +1,72 @@
+////////////////////////////////////
+//createMaxDosePoint.Script
+//create a point ROI at the max dose point
+//
+//Required files that are placed in Script Home:
+//createPointROI_CheckName.Script
+//removeScriptBlank.py
+//dependencyMaxDosePt.Script
+//
+//Modified History:
+//2015 07 Becket Hui
+//2017 06 Becket Hui add dependency to this script
+////////////////////////////////////
+
+///////////////////create max dose point///////////////////
+//first create roi of max dose point//
+RoiList.Pt_MaxDose.Name = "willDestroy";
+RoiList.willDestroy.Destroy = "";
+CreateNewROI = "Add ROI";
+RoiList.Last.Name = "Pt_MaxDose";
+//define max dose point coordinates//
+RoiList.Last.EditCurve.SliceCoordinate = TrialList.Current.MaxDosePoint.RelativeZCoord;
+RoiList.Last.EditCurve.Orientation = "Transverse";
+RoiList.Last.EditCurve.Curve.NumberOfPoints = 1;
+RoiList.Last.EditCurve.Curve.RawData.PointsFirst = TrialList.Current.MaxDosePoint.RelativeXCoord;
+RoiList.Last.EditCurve.Curve.RawData.PointsNext = TrialList.Current.MaxDosePoint.RelativeYCoord;
+RoiList.Last.CopyEditCurveToNewCurveAndClear = "";
+//correct for point ROI out of plane error//
+//create a point from the point ROI//
+CreateNewPOI = "Add Point";
+PoiList.Current.Name = "MaxDose";
+//recenter from current max point ROI//
+RoiList.Current = "Pt_MaxDose";
+PoiAutoplaceMode = "Centroid";
+AutoplaceCurrentPoi = "Automatically Place Point";
+//recreate max dose point ROI//
+RoiList.Pt_MaxDose.Name = "willDestroy";
+RoiList.willDestroy.Destroy = "";
+CreateNewROI = "Add ROI";
+RoiList.Last.Name = "Pt_MaxDose";
+RoiList.Last.Color = "greyscale";
+RoiList.Last.EditCurve.SliceCoordinate = PoiList.Current.ZCoord;
+RoiList.Last.EditCurve.Orientation = "Transverse";
+RoiList.Last.EditCurve.Curve.NumberOfPoints = 1;
+RoiList.Last.EditCurve.Curve.RawData.PointsFirst = PoiList.Current.XCoord;
+RoiList.Last.EditCurve.Curve.RawData.PointsNext = PoiList.Current.YCoord;
+RoiList.Last.CopyEditCurveToNewCurveAndClear = "";
+RoiList.Last.RoiInterpretedType = "DOSE_REGION";
+RoiList.Last.Display2d = "off";
+//remove max dose point in POI list//
+PoiList.Last.Destroy = "";
+
+//create dependency to recompute max dose point if dose changed//
+Store.FreeAt.DependencyMaxDosePt = "";
+Store.At.DependencyMaxDosePt = StringKeyDict {};
+//script home//
+Store.At.DependencyMaxDosePt.StringAt.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+//action scripts//
+Store.At.DependencyMaxDosePt.StringAt.Command = Store.At.DependencyMaxDosePt.At.ScriptHome.String;
+Store.At.DependencyMaxDosePt.At.Command.AppendString = "dependencyMaxDosePt.Script";
+Store.At.DependencyMaxDosePt.StringAt.Refresh = Store.At.DependencyMaxDosePt.At.ScriptHome.String;
+Store.At.DependencyMaxDosePt.At.Refresh.AppendString = "createMaxDosePoint.Script";
+//flag of beams being reset//
+Store.At.DependencyMaxDosePt.FloatAt.ResetFlg = 0;
+//start dependency//
+KeyDependencyList.MaxDosePtROI.Destroy = "";
+KeyDependencyList.CreateChild = "";
+KeyDependencyList.Last = {
+Name = "MaxDosePtROI";
+KeyString = "PluginManager.InversePlanningManager.OptimizationManager.Current.Status";
+AddAction = "Script.ExecuteNow = Store.At.DependencyMaxDosePt.At.Command.String";
+};

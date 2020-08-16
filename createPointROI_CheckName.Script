@@ -1,0 +1,15 @@
+////////////////////////////////////
+//createPointROI_CheckName
+//find the appropriate name for the created point ROI
+////////////////////////////////////
+/*make sure this script is placed in ScriptHome listed in createPointROI script*/
+Store.At.pointROI.StringAt.RoiName = RoiList.Current.Name;
+Store.At.pointROI.StringAt.PoiName = PoiList.Current.Name;
+
+Store.At.pointROI.At.ExecuteCmd = SimpleString{String = "IF.";};
+Store.At.pointROI.At.ExecuteCmd.AppendString = "Store.At.pointROI.At.RoiName.String";
+Store.At.pointROI.At.ExecuteCmd.AppendString = ".Contains.";
+Store.At.pointROI.At.ExecuteCmd.AppendString = Store.At.pointROI.At.PoiName.String;
+Store.At.pointROI.At.ExecuteCmd.AppendString = ".THEN.Store.At.pointROI.At.NameCount.Add = 1;";
+
+Store.At.pointROI.At.ExecuteCmd.Execute = "";

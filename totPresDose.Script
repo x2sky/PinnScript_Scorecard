@@ -1,0 +1,12 @@
+////////////////////////////////////
+//totPresDose.Script
+//find the total prescription dose
+////////////////////////////////////
+/*make sure this script is placed in ScriptHome listed in the parent script*/
+/*To initiate, the parent script should start with Store.FloatAt.PresDose = 0;*/
+
+Store.FloatAt.CurrDose = TrialList.Current.BeamList.Current.PrescriptionList.Current.PrescriptionDose;
+Store.At.CurrDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.Current.NumberOfFractions;
+Store.At.PresDose.Add = Store.At.CurrDose.Value;
+
+Store.FreeAt.CurrDose = "";

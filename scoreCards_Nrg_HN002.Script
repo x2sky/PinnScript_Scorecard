@@ -1,0 +1,70 @@
+////////////////////////////////////
+//scoreCards_Nrg_HN002.Script
+//Trial Score Card for NRG HN002
+//Create score card using the score card function in Pinnacle
+//This score card should be run under the initial prescription
+//
+//Required files that are placed in Script Home:
+//createScoreCardsScript_Nrg_HN002.py
+//currPresDose_Nrg_HN002.Script
+//defineGoalinCards.py
+//
+//Modified:
+//2015 09 Becket Hui
+//2017 06 Becket Hui
+////////////////////////////////////
+
+//create class that stores variables necessary in this script//
+Store.At.SCard = StringKeyDict {};
+//script home//
+Store.At.SCard.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+//patient directory//
+Store.At.SCard.At.PatientPath = SimpleString{};
+Store.At.SCard.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.SCard.At.PatientPath.AppendString = "/";
+Store.At.SCard.At.PatientPath.AppendString = PatientDirectory;
+
+//patient information//
+Store.At.SCard.StringAt.PatientName = PlanInfo.PatientName;
+Store.At.SCard.StringAt.MRN = PlanInfo.MedicalRecordNumber;
+Store.At.SCard.StringAt.Plan = PlanInfo.PlanName;
+
+//protocol//
+Store.At.SCard.StringAt.Protocol = "HN002";
+
+//create flag//
+Store.At.SCard.FloatAt.FlgGo = 1;
+
+//save store//
+Store.At.SCard.StringAt.Storefile = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.Storefile.AppendString = "Store.Nrg_HN002";
+Store.Save = Store.At.SCard.At.Storefile.String;
+
+//write the header to scorecard//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Nrg_HN002.py \"";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "\" \"s\"";
+SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+/*find prescription dose and write to scorecard*/
+Store.At.SCard.FloatAt.PTV_allExist = 1;
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "currPresDose_Nrg_HN002.Script";
+TrialList.Current.BeamList.Current.PrescriptionList.ChildrenEachCurrent.#"@".Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+/*write OAR constraints to scorecard*/
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Nrg_HN002.py \"";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "\" \"o\"";
+SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+/*execute sub-script created by python*/
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsNrg_HN002.Script";
+ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+Store.FreeAt.SCard = "Free Variables";

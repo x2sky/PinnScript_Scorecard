@@ -1,0 +1,6 @@
+////////////////////////////////////
+//clearScoreCards
+//clear all fields in the score card of current plan
+////////////////////////////////////
+
+Scorecard.DoseVolClinicalGoalList.DestroyAllChildren = "Clear Score Card";

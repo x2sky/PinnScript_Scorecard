@@ -1,0 +1,21 @@
+///////////////////////////////////////////////
+//openSCwDesc.Script
+//
+//open the scorecard w description
+//
+//
+//Modified by
+//2017 06 Becket Hui
+//2017 10 Becket Hui add store description to clinical goal if not already exist
+////////////////////////////////////
+Store.StringAt.ScriptHome = "/home/ch4jm/PinnacleScripts/Scorecards/";
+
+Store.StringAt.TempCommand = Store.At.ScriptHome.String;
+Store.At.TempCommand.AppendString = "setScoreCardDesc.Script";
+
+Scorecard.DoseVolClinicalGoalList.ChildrenEachCurrent.#"@".Script.ExecuteNow = Store.At.TempCommand.String;
+
+WindowList.TrialScoreCardEditor_wDesc.Create = "Create Scorecard";
+
+Store.FreeAt.ScriptHome = "";
+Store.FreeAt.TempCommand = "";

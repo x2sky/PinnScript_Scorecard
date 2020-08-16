@@ -1,0 +1,17 @@
+///////////////////////////////////////////////
+//setScoreCardDesc.Script
+//
+//add store description to clinical goal if not already exist
+//
+//
+//Modified by
+//2017 10 Becket Hui
+////////////////////////////////////
+
+Store.StringAt.testExist1 = Scorecard.DoseVolClinicalGoalList.Current.Store.At.Description.String;
+Store.StringAt.testExist2 = Scorecard.DoseVolClinicalGoalList.Current.Store.At.Description.String;
+// if description is empty string, then, empty is not equal to empty under Pinnacle logic
+IF.Store.At.testExist1.String.STRINGNOTEQUALTO.Store.At.testExist2.String.THEN.Scorecard.DoseVolClinicalGoalList.Current.Store.StringAt.Description = "Goal";
+
+Store.FreeAt.testExist1 = "";
+Store.FreeAt.testExist2 = "";

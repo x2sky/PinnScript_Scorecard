@@ -1,0 +1,115 @@
+///////////////////////////////////////////////
+//HotScriptList.scoreCardRtog
+//
+//Create HotScriptList for creating score card for
+//clinical protocols
+//Based on info from the pinnacle listserv
+//
+//About: Script Selector
+//
+//
+//Modified by
+//2015 09 Becket Hui
+//2016 05 Becket Hui add MSK rectal trial protocol
+//2017 06 Becket Update
+////////////////////////////////////
+// Set Base paths for the Scripts
+Store.StringAt.BasePath =  GetEnv.PINN_SITE;
+Store.At.BasePath.AppendString = "/Scripts/";
+Store.StringAt.UVAMenuPath    = GetEnv.UVA_SCRIPT;
+Store.At.UVAMenuPath.AppendString = "/menuScripts/";
+
+// -------------------------------
+// create script to remove surplus buttons
+Store.StringAt.FileName = Store.At.UVAMenuPath.String;
+Store.At.FileName.AppendString = "/utilities/RemoveSurplusButtons.Script";
+// load to remove surplus buttons
+LoadNoCheckSum = Store.At.FileName.String;
+
+// -------------------------------
+// Create new HotScript list
+// Replace the 6 buttons (with index 0... 5) which are left over
+// with new functionality. These can also be filled with empty titles
+// when less than 6 buttons are needed.
+// Note: Exceeding ~12 seems to cause the second child button to crash.
+
+// set the script home directory //
+Store.StringAt.ScriptHome = Store.At.UVAMenuPath.String;
+Store.At.ScriptHome.AppendString = "Scorecards/";
+//-------------------------------//
+
+// when less than 6 buttons are needed.
+HotScriptList.#"#0".ScriptName = "Main Menu";
+HotScriptList.#"#0".ScriptFile = "/usr/local/PinnacleSiteData/clinical/Scripts/ScriptManagement/MainScriptMenu.Script";
+//
+HotScriptList.#"#1".ScriptName = " User Main Menu";
+Store.StringAt.FileName = Store.At.BasePath.Value;
+Store.At.FileName.AppendString = "GoBack.Script";
+HotScriptList.#"#1".ScriptFile = Store.At.FileName.Value;
+//
+HotScriptList.#"#2".ScriptName = "  Instructions";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "instruct_scoreCard.Script";
+HotScriptList.#"#2".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.#"#3".ScriptName = "  Open scorecard w description";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "openSCwDesc.Script";
+HotScriptList.#"#3".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.#"#4".ScriptName = "  Create ROI for current POI";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "createPointROI.Script";
+HotScriptList.#"#4".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.#"#5".ScriptName = "  Create ROI for max dose";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "createMaxDosePoint.Script";
+HotScriptList.#"#5".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for NRG HN 002";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_Nrg_HN002.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for RTOG 0813";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_Rtog0813.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for RTOG 0915";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_Rtog0915.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for MSK rectal cancer";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_MSK13-213.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for RTOG 0924-phase 1";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_Rtog0924Ph1.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Scorecard for RTOG 0924-phase 2";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "scoreCards_Rtog0924Ph2.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.CreateChild = "";
+HotScriptList.Last.ScriptName = "  Clear current scorecard";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "clearScoreCards.Script";
+HotScriptList.Last.ScriptFile = Store.At.FileName.String;
+
+Store.FreeAt.FileName = "";
+Store.FreeAt.ScriptHome = "";
+
+Echo = "Completed loading HotScriptList.scoreCard";

@@ -1,0 +1,67 @@
+////////////////////////////////////
+//createDoseRelatedROI_RtogLung.Script
+//this script create dose related ROIs for RTOG 0813 and 0915 protocols
+//
+//create the ROIs:
+//External - PTV
+//External - PTV_2cm
+//
+//Required dose to be calculated!!
+//
+//Required Files:
+//
+//v 0.0
+//
+//Modified:
+//2017 6 Becket Hui create script
+////////////////////////////////////
+
+//remove current ROIs with the same names//
+RoiList.#"External-PTV_2cm".Name = "willDestroy";
+RoiList.willDestroy.Destroy = "";
+RoiList.#"External-PTV".Name = "willDestroy";
+RoiList.willDestroy.Destroy = "";
+
+//check if External exists//
+IF.RoiList.ContainsObject.External.EQUALTO.#"#0".THEN.TrialList.Current.ShowPatAirThreshold = "CreateExternal";
+IF.RoiList.ContainsObject.External.EQUALTO.#"#0".THEN.RoiList.#"External ROI".Name = "External";
+RoiList.External.RoiInterpretedType = "EXTERNAL";
+
+//create External - PTV//
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.External.RoiExpandState = "Source";
+RoiList.PTV.RoiExpandState = "Avoid Interior";
+RoiExpandControl.CreateNewTarget = "1";
+RoiExpandControl.TargetRoiName = "External-PTV";
+RoiExpandControl.ConstantPadding = "0";
+RoiExpandControl.UseConstantPadding = "1";
+RoiExpandControl.Expand = "1";
+RoiExpandControl.DoExpand = "Expand";
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.Last.RoiInterpretedType = "SUPPORT";
+RoiList.Last.Color = "seashell";
+RoiList.Last.Display2d = "Off";
+
+//create External - PTV_2cm//
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.PTV.RoiExpandState = "Source";
+RoiExpandControl.CreateNewTarget = "1";
+RoiExpandControl.TargetRoiName = "PTV_2cmTemp";
+RoiExpandControl.ConstantPadding = "2";
+RoiExpandControl.UseConstantPadding = "1";
+RoiExpandControl.Expand = "1";
+RoiExpandControl.DoExpand = "Expand";
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.External.RoiExpandState = "Source";
+RoiList.PTV_2cmTemp.RoiExpandState = "Avoid Interior";
+RoiExpandControl.CreateNewTarget = "1";
+RoiExpandControl.TargetRoiName = "External-PTV_2cm";
+RoiExpandControl.ConstantPadding = "0";
+RoiExpandControl.UseConstantPadding = "1";
+RoiExpandControl.Expand = "1";
+RoiExpandControl.DoExpand = "Expand";
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.Last.RoiInterpretedType = "SUPPORT";
+RoiList.Last.Color = "forest";
+RoiList.Last.Display2d = "Off";
+RoiList.PTV_2cmTemp.Destroy = "";

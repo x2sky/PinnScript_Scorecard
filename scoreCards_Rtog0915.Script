@@ -1,0 +1,83 @@
+////////////////////////////////////
+//scoreCards_Rtog0915.Script
+//Trial Score Card for RTOG 0915
+//Create score card using the score card function in Pinnacle
+//
+//Required files that are placed in Script Home:
+//createScoreCardsScript_Rtog0915.py
+//createDoseRelatedROI_RtogLung.Script
+//createMaxDosePoint.Script
+//criteria_Rtog0915.py
+//defineGoalinCards.py
+//
+//v. 2.0
+//version 2.0 includes automatic prompt to run ROI standardization, automatic ROI creations, change iso-center dose requirement to center of mass dose requirement
+//
+//Modified:
+//2015 08 Becket Hui
+//2016 11 Becket Hui
+//2017 06 Becket Hui update ROI creation and use new score card with description
+////////////////////////////////////
+
+//create class that stores variables necessary in this script//
+Store.At.SCard = StringKeyDict {};
+//script home//
+Store.At.SCard.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+//patient directory//
+Store.At.SCard.At.PatientPath = SimpleString{};
+Store.At.SCard.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.SCard.At.PatientPath.AppendString = "/";
+Store.At.SCard.At.PatientPath.AppendString = PatientDirectory;
+
+//patient information//
+Store.At.SCard.StringAt.PatientName = PlanInfo.PatientName;
+Store.At.SCard.StringAt.MRN = PlanInfo.MedicalRecordNumber;
+Store.At.SCard.StringAt.Plan = PlanInfo.PlanName;
+
+//protocol//
+Store.At.SCard.StringAt.Protocol = "RTOG0915";
+
+//create flag//
+Store.At.SCard.FloatAt.FlgGo = 1;
+
+//find prescription dose//
+Store.At.SCard.FloatAt.PresDose = TrialList.Current.BeamList.Current.PrescriptionList.Current.PrescriptionDose;
+Store.At.SCard.At.PresDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.Current.NumberOfFractions;
+
+//find number of fractions//
+Store.At.SCard.FloatAt.NoFractions = TrialList.Current.BeamList.Current.PrescriptionList.Current.NumberOfFractions;
+
+//find volume of PTV//
+IF.RoiList.ContainsObject.PTV.EQUALTO.#"#0".THEN.
+WarningMessage = "PTV is not defined! Please define PTV before running this script.";
+IF.RoiList.ContainsObject.PTV.EQUALTO.#"#0".THEN.Store.At.SCard.FloatAt.FlgGo = 0;
+Store.At.SCard.FloatAt.PTVVol = 0;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.RoiList.PTV.RecomputeStatistics = "Recompute";  //recompute PTV
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Store.At.SCard.FloatAt.PTVVol = RoiList.PTV.Volume; //Define PTV volume
+
+//create ROI//
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createMaxDosePoint.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createDoseRelatedROI_RtogLung.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+//save store//
+Store.At.SCard.StringAt.Storefile = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.Storefile.AppendString = "Store.Rtog0915";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Store.Save = Store.At.SCard.At.Storefile.String;
+
+//run python and create sub-script that creates the Pinnacle script that initiates the score cards//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Rtog0915.py ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+//execute sub-script created by python//
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsRtog0915.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+Store.FreeAt.Rtog = "Free Variables";

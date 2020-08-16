@@ -1,0 +1,44 @@
+////////////////////////////////////
+//scoreCards_Rtog0813_afterPause.Script
+//Continuation of scoreCards_Rtog0813.Script
+//
+//Required files that are placed in Script Home:
+//scoreCards_Rtog0813.Script
+//createScoreCardsScript_Rtog0813.py
+//createDoseRelatedROI.Script
+//criteria_Rtog0813.py
+//defineGoalinCards.py
+//
+//Modified:
+//2017 06 Becket Hui
+////////////////////////////////////
+//create ROI//
+WaitMessage = "Creating ROIs...";
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createPointROI.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Store.At.SCard.StringAt.IsoCtrName = RoiList.Last.Name;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.WindowList.NewPoiSpreadsheet.Unrealize = "";
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createDoseRelatedROI_RtogLung.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+//save store//
+Store.At.SCard.StringAt.Storefile = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.Storefile.AppendString = "Store.Rtog0813";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Store.Save = Store.At.SCard.At.Storefile.String;
+
+//run python and create sub-script that creates the Pinnacle script that initiates the score cards//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Rtog0813.py ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+//execute sub-script created by python//
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsRtog0813.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+WaitMessageOff = "";
+
+Store.FreeAt.SCard = "Free Variables";

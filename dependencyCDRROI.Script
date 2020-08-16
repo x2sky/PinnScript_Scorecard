@@ -1,0 +1,58 @@
+////////////////////////////////////
+//dependencyCDRROI.Script
+//define action needed to be done after keystring met
+//in createDoseRelatedROI.Script
+//
+//Required dose to be calculated!!
+//
+//Required Files:
+//createDoseRelatedROI.Script
+//
+//Modified:
+//2015 10 Becket Hui
+////////////////////////////////////
+//Parameters set for to see if beam status changed//
+IF.Store.At.DependencyDRROI.At.ResetFlg.Value.EQUALTO.#"0".
+THEN.
+Store.StringAt.OptStatus = "Initializing Optimization...";
+IF.Store.At.DependencyDRROI.At.ResetFlg.Value.EQUALTO.#"1".
+THEN.
+Store.StringAt.OptStatus = "Optimization stopped.";
+Store.FloatAt.ChgFlg = 0;
+
+//Check if optimization status changed//
+IF.PluginManager.InversePlanningManager.OptimizationManager.Current.Status.STRINGEQUALTO.Store.At.OptStatus.String.
+THEN.
+Store.FloatAt.ChgFlg = 1;
+
+//raise the reset flag if optimization started//
+Store.FloatAt.AndFlg = 0;
+IF.Store.At.ChgFlg.Value.EQUALTO.#"1".THEN.Store.At.AndFlg.Add = 1;
+IF.Store.At.DependencyDRROI.At.ResetFlg.Value.EQUALTO.#"0".THEN.Store.At.AndFlg.Add = 1;
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Store.At.DependencyDRROI.FloatAt.ResetFlg = 1;
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Store.FloatAt.ChgFlg = 0;
+
+//check if any of the beam is recomputed//
+Store.FloatAt.AndFlg = 0;
+IF.Store.At.ChgFlg.Value.EQUALTO.#"1".THEN.Store.At.AndFlg.Add = 1;
+IF.Store.At.DependencyDRROI.At.ResetFlg.Value.EQUALTO.#"1".THEN.Store.At.AndFlg.Add = 1;
+
+//delete dose dependent ROIs and dependency if criteria are met//
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Echo = "Dose changed, delete dose related ROIs";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.IDL105pct.Name = "willDestroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.willDestroy.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.IDL100pct.Name = "willDestroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.willDestroy.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.IDL50pct.Name = "willDestroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.willDestroy.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.#"IDL105pct-PTV".Name = "willDestroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.willDestroy.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.MaxPointDose.Name = "willDestroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.RoiList.willDestroy.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Store.At.DependencyDRROI.StringAt.Destroy = "Destroy";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.KeyDependencyList.DoseRelatedROI.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Store.FreeAt.DependencyDRROI = "";
+
+Store.FreeAt.OptStatus = "";
+Store.FreeAt.ChgFlg = "";
+Store.FreeAt.AndFlg = "";

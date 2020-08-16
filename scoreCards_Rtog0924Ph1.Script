@@ -1,0 +1,53 @@
+////////////////////////////////////
+//scoreCards_Rtog0924Ph1.Script
+//Trial Score Card for RTOG 0924 Phase 1
+//Create score card using the score card function in Pinnacle
+//This score card should be run under the initial prescription
+//
+//Required files that are placed in Script Home:
+//createScoreCardsScript_Rtog0924Ph1.py
+//defineGoalinCards.py
+//scoreCards_Rtog0924Ph1_afterPause.Script
+//checkPTVName_Rtog.py
+//
+//v. 2.0
+//version 2.0 includes automatic prompt to run ROI standardization, automatic ROI creations, change iso-center dose requirement to center of mass dose requirement
+//
+//Modified:
+//2015 08 Becket Hui
+//2017 06 Becket Hui update ROI creation and use new score card with description
+////////////////////////////////////
+
+//create class that stores variables necessary in this script//
+Store.At.SCard = StringKeyDict {};
+//script home//
+Store.At.SCard.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+//patient directory//
+Store.At.SCard.At.PatientPath = SimpleString{};
+Store.At.SCard.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.SCard.At.PatientPath.AppendString = "/";
+Store.At.SCard.At.PatientPath.AppendString = PatientDirectory;
+
+//patient information//
+Store.At.SCard.StringAt.PatientName = PlanInfo.PatientName;
+Store.At.SCard.StringAt.MRN = PlanInfo.MedicalRecordNumber;
+Store.At.SCard.StringAt.Plan = PlanInfo.PlanName;
+
+//protocol//
+Store.At.SCard.StringAt.Protocol = "RTOG0924";
+
+//create flag//
+Store.At.SCard.FloatAt.FlgGo = 1;
+
+//find prescription dose//
+WindowList.TrialPrescription.Create = "";
+Store.StringAt.myScriptToRunText = "Please select (highlight) the initial primary prescription.";
+Store.StringAt.myScriptToRunAfterPause = Store.At.SCard.At.ScriptHome.String;
+Store.At.myScriptToRunAfterPause.AppendString = "scoreCards_Rtog0924Ph1_afterPause.Script";
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "pauseScript.Script";
+ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+
+///The script will continue after pause in scoreCards_Rtog0924Ph1_afterPause.Script///
+/**/

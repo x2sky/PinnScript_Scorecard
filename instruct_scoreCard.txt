@@ -1,0 +1,36 @@
+Instructions to use the score card scripts:
+
+General rule:
+- PTV must be defined.
+- ROIs in scorecard may not match the ROIs in the ROI list, you may use the drop down list in score card to pick the appropriate ROIs, or change the ROI names to match the score card.
+
+Specific scripts:
+-----------------
+"Scorecard for NRG H&N 002"
+- create the score card for NRG H&N 002 protocol
+- for MEAN DOSE calculation of OAR: "Not Met" means OAR mean dose is below criteria, which is GOOD; "Met" means OAR mean dose is above criteria, which is NO GOOD
+
+"Scorecard for RTOG 0813"
+- create ROIs: isocenter, External - PTV and External - PTV_2cm
+- create the score card for RTOG 0813 protocol
+- the current score will be clear
+
+"Scorecard for RTOG 0915"
+- create ROIs: External - PTV and External - PTV_2cm
+- create the score card for RTOG 0915 protocol
+- please check if max dose point is within ROI, if max dose point is outside PTV, a warning message would appear
+- the current score will be clear
+
+"Scorecard for MSK rectal cancer"
+- create the score card for MSK rectal cancer protocol
+- Target names must be exactly the same as in protocol PTV45, PTV50, PTVBoost
+- Each time something changes, you should run the score card again as many limits depend on the max dose of PTVs
+
+"Scorecard for RTOG 0924"
+- create the score card for RTOG 0924 protocol
+- phase 1 is the primary prescription before boost
+- phase 2 is the composite prescription including boost
+- PTV in phase 1 should be named and defined as PTV_4500
+- PTV in phase 2 should be named and defined as PTV_7920 or PTV_(total prescription)
+- please check if max dose point is within ROI
+- the current score will be clear

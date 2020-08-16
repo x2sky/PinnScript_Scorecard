@@ -1,0 +1,46 @@
+////////////////////////////////////
+//currPresDose_Nrg_HN002.Script
+//for NRG HN002, find the current
+//prescription dose and run all the
+//prescription required procedures
+//
+//Required files that are placed in Script Home:
+//scoreCards_Nrg_HN002.Script (parent script, contains Store.At.SCard)
+//checkPTVName_Rtog.py
+//
+//Modified:
+//2015 09 Becket Hui
+//2017 06 Becket Hui make adjustment
+////////////////////////////////////
+
+//current dose//
+Store.At.SCard.FloatAt.CurrDose = TrialList.Current.BeamList.Current.PrescriptionList.Current.PrescriptionDose;
+Store.At.SCard.At.CurrDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.Current.NumberOfFractions;
+
+//check if current PTV name exists//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "checkPTVName_Rtog.py ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.FloatAt.CurrDose;
+Store.At.SCard.At.TempCommand.AppendString = " ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "checkPTVName.Script";
+ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+IF.Store.At.SCard.At.PTV_NameExist.Value.EQUALTO.#"#0".THEN.Store.At.SCard.FloatAt.PTV_allexist = 0;
+
+//save store//
+Store.At.SCard.StringAt.Storefile = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.Storefile.AppendString = "Store.Nrg_HN002";
+Store.Save = Store.At.SCard.At.Storefile.String;
+
+//write PTV constraints to scorecard//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Nrg_HN002.py \"";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "\" \"p\"";
+SpawnCommand = Store.At.SCard.At.TempCommand.String;

@@ -1,0 +1,49 @@
+////////////////////////////////////
+//scoreCards_Rtog0924Ph1_afterPause.Script
+//Continuation of scoreCards_Rtog0924Ph1.Script
+//
+//Required files that are placed in Script Home:
+//createScoreCardsScript_Rtog0924Ph1.py
+//createMaxDosePoint.Script
+//defineGoalinCards.py
+//checkPTVName_Rtog.py
+//
+//Modified:
+//2017 06 Becket Hui
+////////////////////////////////////
+
+//find prescription dose//
+WindowList.TrialPrescription.Unrealize = "";
+Store.At.SCard.FloatAt.PresDose = TrialList.Current.BeamList.Current.PrescriptionList.Current.PrescriptionDose;
+Store.At.SCard.At.PresDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.Current.NumberOfFractions;
+
+//check PTV name and find volume of PTV//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "checkPTVName_Rtog.py ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.FloatAt.PresDose;
+Store.At.SCard.At.TempCommand.AppendString = " ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+SpawnCommand = Store.At.SCard.At.TempCommand.String;
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "checkPTVName.Script";
+ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+//save store//
+Store.At.SCard.StringAt.Storefile = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.Storefile.AppendString = "Store.Rtog0924";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Store.Save = Store.At.SCard.At.Storefile.String;
+
+//run python and create sub-script that creates the Pinnacle script that initiates the score cards//
+Store.At.SCard.StringAt.TempCommand = "python ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.ScriptHome.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsScript_Rtog0924Ph1.py ";
+Store.At.SCard.At.TempCommand.AppendString = Store.At.SCard.At.PatientPath.String;
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.SpawnCommand = Store.At.SCard.At.TempCommand.String;
+
+//execute sub-script created by python//
+Store.At.SCard.StringAt.TempCommand = Store.At.SCard.At.PatientPath.String;
+Store.At.SCard.At.TempCommand.AppendString = "createScoreCardsRtog0924Ph1.Script";
+IF.Store.At.SCard.At.FlgGo.Value.EQUALTO.#"#1".THEN.Script.ExecuteNow = Store.At.SCard.At.TempCommand.String;
+
+Store.FreeAt.SCard = "Free Variables";

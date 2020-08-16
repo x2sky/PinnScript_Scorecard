@@ -1,0 +1,78 @@
+////////////////////////////////////
+//scoreCards_MSK13-213.Script
+//Trial Score Card for MSK rectal cancer protocol
+//Create score card using the score card function in Pinnacle
+//
+//Required files that are placed in Script Home:
+//createScoreCardsScript_MSK13-213.py
+//defineGoalinCards.py
+//
+//Modified:
+//2016 05 Becket Hui
+//2017 06 Becket Hui small adjustment to ignore boost dose if there is no boost prescription
+////////////////////////////////////
+
+//create class that stores variables necessary in this script//
+Store.At.Pcl = StringKeyDict {};
+//Script Home//
+//Store.At.Pcl.StringAt.ScriptHome = Store.At.UVAMenuPath.String;
+//Store.At.Pcl.At.ScriptHome.AppendString = "Scorecards/";
+Store.At.Pcl.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+///////////////////
+Store.At.Pcl.At.PatientPath = SimpleString{};
+Store.At.Pcl.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.Pcl.At.PatientPath.AppendString = "/";
+Store.At.Pcl.At.PatientPath.AppendString = PatientDirectory;
+
+//patient information//
+Store.At.Pcl.StringAt.PatientName = PlanInfo.PatientName;
+Store.At.Pcl.StringAt.MRN = PlanInfo.MedicalRecordNumber;
+Store.At.Pcl.StringAt.Plan = PlanInfo.PlanName;
+
+//find prescription dose//
+
+Store.At.Pcl.FloatAt.PresDose = TrialList.Current.BeamList.Current.PrescriptionList.#"#0".PrescriptionDose;
+Store.At.Pcl.At.PresDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.#"#0".NumberOfFractions;
+
+//find boost dose//
+Store.At.Pcl.FloatAt.BstDose = 0;
+Echo = Store.At.Pcl.At.BstDose.Value; //must do this to realize zero...
+IF.TrialList.Current.BeamList.Current.PrescriptionList.Count.GREATERTHANOREQUALTO.#"#2".THEN.Store.At.Pcl.FloatAt.BstDose = TrialList.Current.BeamList.Current.PrescriptionList.#"#1".PrescriptionDose;
+IF.TrialList.Current.BeamList.Current.PrescriptionList.Count.GREATERTHANOREQUALTO.#"#2".THEN.Store.At.Pcl.At.BstDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.#"#1".NumberOfFractions;
+
+//find optional boost dose//
+Store.At.Pcl.FloatAt.OptBstDose = 0;
+Echo = Store.At.Pcl.At.OptBstDose.Value; //must do this to realize zero...
+IF.TrialList.Current.BeamList.Current.PrescriptionList.Count.GREATERTHANOREQUALTO.#"#3".THEN.Store.At.Pcl.FloatAt.OptBstDose = TrialList.Current.BeamList.Current.PrescriptionList.#"#2".PrescriptionDose;
+IF.TrialList.Current.BeamList.Current.PrescriptionList.Count.GREATERTHANOREQUALTO.#"#3".THEN.Store.At.Pcl.At.OptBstDose.Multiply = TrialList.Current.BeamList.Current.PrescriptionList.#"#2".NumberOfFractions;
+
+//find maximum dose//
+Store.At.Pcl.StringAt.TrialNow = "Dose -- ";
+Store.At.Pcl.At.TrialNow.AppendString = TrialList.Current.Name;
+RoiList.PTV50.StatsVolumeName = Store.At.Pcl.At.TrialNow.String;
+Store.FloatAt.PTV50Max = 5000;
+Echo = Store.At.PTV50Max.Value; //must do this to realize zero...
+Store.FloatAt.PTV50Max = RoiList.PTV50.MaxDisplay;
+RoiList.PTVBoost.StatsVolumeName = Store.At.Pcl.At.TrialNow.String;
+Store.FloatAt.PTVBtMax = 5400;
+Echo = Store.At.PTVBtMax.Value; //must do this to realize zero...
+Store.FloatAt.PTVBtMax = RoiList.PTVBoost.MaxDisplay;
+
+//save store//
+Store.At.Pcl.StringAt.Storefile = Store.At.Pcl.At.PatientPath.String;
+Store.At.Pcl.At.Storefile.AppendString = "Store.MSK13-213";
+Store.Save = Store.At.Pcl.At.Storefile.String;
+
+//run python and create sub-script that creates the Pinnacle script that initiates the score cards//
+Store.At.Pcl.StringAt.TempCommand = "python ";
+Store.At.Pcl.At.TempCommand.AppendString = Store.At.Pcl.At.ScriptHome.String;
+Store.At.Pcl.At.TempCommand.AppendString = "createScoreCardsScript_MSK13-213.py ";
+Store.At.Pcl.At.TempCommand.AppendString = Store.At.Pcl.At.PatientPath.String;
+SpawnCommand = Store.At.Pcl.At.TempCommand.String;
+
+//execute sub-script created by python//
+Store.At.Pcl.StringAt.TempCommand = Store.At.Pcl.At.PatientPath.String;
+Store.At.Pcl.At.TempCommand.AppendString = "createScoreCards.Script";
+ExecuteNow = Store.At.Pcl.At.TempCommand.String;
+
+Store.FreeAt.Pcl = "Free Variables";

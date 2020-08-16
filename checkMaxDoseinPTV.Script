@@ -1,0 +1,37 @@
+////////////////////////////
+//checkMaxDoseinPTV.Script//
+////////////////////////////
+//Must have defined Store.At.Rtog.At.PTV_N in main script
+
+/*create max dose ROI*/
+CreateNewROI = "Add ROI";
+RoiList.Last.Name = "TROI1";
+/*define the coordinates*/
+RoiList.Last.EditCurve.SliceCoordinate = TrialList.Current.MaxDosePoint.RelativeZCoord;
+RoiList.Last.EditCurve.Orientation = "Transverse";
+RoiList.Last.EditCurve.Curve.NumberOfPoints = 1;
+RoiList.Last.EditCurve.Curve.RawData.PointsFirst = TrialList.Current.MaxDosePoint.RelativeXCoord;
+RoiList.Last.EditCurve.Curve.RawData.PointsNext = TrialList.Current.MaxDosePoint.RelativeYCoord;
+RoiList.Last.CopyEditCurveToNewCurveAndClear = "";
+RoiList.Last.RecomputeStatistics = "Recompute";
+Store.At.Rtog.FloatAt.maxPtVol = RoiList.Last.Volume;
+
+/*expand point*/
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.Last.RoiExpandState = "Source";
+Store.At.Rtog.StringAt.TempCommand = "RoiList.";
+Store.At.Rtog.At.TempCommand.AppendString = Store.At.Rtog.At.PTV_N.String;
+Store.At.Rtog.At.TempCommand.AppendString = ".MakeCurrent = \"\"";
+Store.At.Rtog.At.TempCommand.Execute = "";
+RoiList.Current.RoiExpandState = "Avoid Interior";
+RoiExpandControl.TargetRoiName = "TROI2";
+RoiExpandControl.CreateNewTarget = "1";
+RoiExpandControl.Expand = "1";
+RoiExpandControl.DoExpand = "Expand";
+RoiList.#"*".ResetRoiExpandState = "Clear All";
+RoiList.Last.RecomputeStatistics = "Recompute";
+
+IF.RoiList.Last.Volume.STRINGNOTEQUALTO.#"#?".THEN.WarningMessage = "Max Dose Point is outside of PTV!! Please replan before compute scorecard.";
+
+RoiList.TROI1.Destroy = "";
+RoiList.TROI2.Destroy = "";

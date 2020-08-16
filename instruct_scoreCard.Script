@@ -1,0 +1,20 @@
+///////////////////////////////////////////////
+//instruct_scoreCard.Script
+//
+//Display the instructions for the RTOG score card
+//
+//Modified by
+// BH 2015 07
+////////////////////////////////////
+
+/*create class that stores variables necessary in this script*/
+Store.At.Rtog = StringKeyDict {};
+//!!Script Home!!//
+Store.At.Rtog.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+///////////////////
+Store.At.Rtog.StringAt.TempCommand = "dtpad -standAlone -statusLine -wrapToFit ";
+Store.At.Rtog.At.TempCommand.AppendString = Store.At.Rtog.At.ScriptHome.String;
+Store.At.Rtog.At.TempCommand.AppendString = "instruct_scoreCard.txt &";
+SpawnCommand = Store.At.Rtog.At.TempCommand.String;
+
+Store.FreeAt.Rtog = "Free Variables";

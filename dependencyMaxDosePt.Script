@@ -1,0 +1,48 @@
+////////////////////////////////////
+//dependencyMaxDosePt.Script
+//define action needed to be done after keystring met
+//in createDoseRelatedROI.Script
+//
+//Required Files:
+//createMaxDosePoint.Script
+//
+//Modified:
+//2015 10 Becket Hui
+//2017 06 Becket Hui rename name of script and simplify the computation
+////////////////////////////////////
+//Parameters set for to see if beam status changed//
+Store.StringAt.OptStatusTrigger = "Initializing Optimization...";
+Store.StringAt.OptStatusStop = "Final dose computation complete";
+
+//Check if optimization status changed//
+Store.FloatAt.AndFlg = 0;
+IF.Store.At.DependencyMaxDosePt.At.ResetFlg.Value.EQUALTO.#"0".
+THEN.
+Store.FloatAt.AndFlg = 0;
+IF.Store.At.DependencyMaxDosePt.At.ResetFlg.Value.EQUALTO.#"1".
+THEN.
+Store.FloatAt.AndFlg = 1;
+IF.PluginManager.InversePlanningManager.OptimizationManager.Current.Status.STRINGEQUALTO.#"#Initializing Optimization...".
+THEN.
+Store.At.AndFlg.Add = 0;
+IF.PluginManager.InversePlanningManager.OptimizationManager.Current.Status.STRINGEQUALTO.#"#Final dose computation complete".
+THEN.
+Store.At.AndFlg.Add = 2;
+
+IF.RoiList.ContainsObject.Pt_MaxDose.EQUALTO.#"0".THEN.Store.FloatAt.AndFlg = 30;
+
+//refresh dose dependent ROIs and dependency if criteria are met//
+IF.Store.At.AndFlg.Value.EQUALTO.#"0".THEN.Echo = "Dose changed, prepare to calculate max dose point again.";
+IF.Store.At.AndFlg.Value.EQUALTO.#"0".THEN.Store.At.DependencyMaxDosePt.FloatAt.ResetFlg = 1;
+IF.Store.At.AndFlg.Value.EQUALTO.#"3".THEN.Echo = "Dose optimization stop, start recomputing max dose point.";
+IF.Store.At.AndFlg.Value.EQUALTO.#"3".THEN.Script.ExecuteNow = Store.At.DependencyMaxDosePt.At.Refresh.String;
+IF.Store.At.AndFlg.Value.EQUALTO.#"3".THEN.Store.At.DependencyMaxDosePt.FloatAt.ResetFlg = 0;
+IF.Store.At.AndFlg.Value.EQUALTO.#"2".THEN.Store.At.DependencyMaxDosePt.FloatAt.ResetFlg = 0;
+IF.Store.At.AndFlg.Value.EQUALTO.#"30".THEN.Echo = "Max dose point doesn't exist, delete dependency";
+IF.Store.At.AndFlg.Value.EQUALTO.#"30".THEN.KeyDependencyList.MaxDosePtROI.Destroy = "";
+IF.Store.At.AndFlg.Value.EQUALTO.#"30".THEN.Store.FreeAt.DependencyMaxDosePt = "";
+
+Store.FreeAt.OptStatusTrigger = "";
+Store.FreeAt.OptStatusStop = "";
+Store.FreeAt.AndFlg = "";
+Store.FreeAt.WaitMin = "";

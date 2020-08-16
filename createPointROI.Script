@@ -1,0 +1,63 @@
+////////////////////////////////////
+//createPointROI.Script
+//create a point ROI from the current POI
+//
+//Required files that are placed in Script Home:
+//createPointROI_CheckName.Script
+//removeScriptBlank.py
+//
+//Modified History:
+//2015 07 Becket Hui
+//2017 06 Becket Hui
+////////////////////////////////////
+
+//create class that stores variables necessary in this script//
+Store.At.pointROI = StringKeyDict {};
+//Script Home//
+Store.At.pointROI.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Scorecards/";};
+///////////////////
+Store.At.pointROI.At.PatientPath = SimpleString{};
+Store.At.pointROI.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.pointROI.At.PatientPath.AppendString = "/";
+Store.At.pointROI.At.PatientPath.AppendString = PatientDirectory;
+
+//create the ROI in the list//
+CreateNewROI = "Add ROI";
+
+//check current ROI names//
+Store.At.pointROI.FloatAt.NameCount = 1;
+Store.At.pointROI.StringAt.TempCommand = Store.At.pointROI.At.ScriptHome.String;
+Store.At.pointROI.At.TempCommand.AppendString = "createPointROI_CheckName.Script";
+RoiList.ChildrenEachCurrent.#"@".Script.ExecuteNow = Store.At.pointROI.At.TempCommand.String;
+//create ROI name//
+Store.At.pointROI.StringAt.RoiName = PoiList.Current.Name;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand = SimpleString{String = "python ";};
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = Store.At.pointROI.At.ScriptHome.String;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = "removeScriptBlank.py ";
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = Store.At.pointROI.At.NameCount.Value;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = " Store.At.pointROI.At.NameCountStr ";
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = Store.At.pointROI.At.PatientPath.String;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.SpawnCommand = Store.At.pointROI.At.TempCommand.String;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.StringAt.TempCommand = Store.At.pointROI.At.PatientPath.String;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.TempCommand.AppendString = "removeSpace.Script";
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Script.ExecuteNow = Store.At.pointROI.At.TempCommand.String;
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.RoiName.AppendString = "_";
+IF.Store.At.pointROI.At.NameCount.Value.GREATERTHAN.#"#1".THEN.Store.At.pointROI.At.RoiName.AppendString = Store.At.pointROI.At.NameCountStr.String;
+
+//write name of the ROI//
+RoiList.Last.Name = Store.At.pointROI.At.RoiName.String;
+RoiList.Last.Color = PoiList.Current.Color;
+
+//define the coordinates//
+RoiList.Last.EditCurve.SliceCoordinate = PoiList.Current.ZCoord;
+RoiList.Last.EditCurve.Orientation = "Transverse";
+RoiList.Last.EditCurve.Curve.NumberOfPoints = 1;
+RoiList.Last.EditCurve.Curve.RawData.PointsFirst = PoiList.Current.XCoord;
+RoiList.Last.EditCurve.Curve.RawData.PointsNext = PoiList.Current.YCoord;
+
+//copy coordinates to new curve//
+RoiList.Last.CopyEditCurveToNewCurveAndClear = "";
+RoiList.Last.RoiInterpretedType = "FIXATION";
+RoiList.Last.Display2d = "off";
+
+Store.FreeAt.pointROI = "";
